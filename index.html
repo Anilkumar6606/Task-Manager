@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager </title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <div class="logo">
+                            <i data-lucide="cpu"></i>
+                        </div>
+                        <div class="header-text">
+                            <h1>To Do List</h1>
+                            <p class="status">
+                                <i data-lucide="wifi"></i>
+                                <span id="current-date"></span> • <span id="current-time"></span> • System Online
+                            </p>
+                        </div>
+                    </div>
+                    <div class="header-streak">
+                        <div class="streak-display">
+                            <i data-lucide="flame" id="header-flame"></i>
+                            <div class="streak-text">
+                                <span id="header-streak-count">0</span>
+                                <span> day streak</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alert for overdue tasks -->
+            <div id="overdue-alert" class="alert hidden">
+                <i data-lucide="alert-triangle"></i>
+                <span id="alert-message"></span>
+            </div>
+
+            <div class="main-grid">
+                <!-- Tasks Section -->
+                <div class="tasks-section">
+                    <div class="section-header">
+                        <h2>
+                            <i data-lucide="zap"></i>
+                            Active Processes
+                        </h2>
+                        <button id="add-task-btn" class="btn-primary">
+                            <i data-lucide="plus"></i>
+                            Initialize Task
+                        </button>
+                    </div>
+
+                    <div id="tasks-container" class="tasks-container">
+                        <div id="empty-state" class="empty-state">
+                            <i data-lucide="cpu"></i>
+                            <h3>No active processes</h3>
+                            <p>Initialize your first task to begin!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Section -->
+                <div class="stats-section">
+                    <!-- First Row -->
+                    <div class="stats-row">
+                        <!-- Daily Deadline Timer -->
+                        <div class="card timer-card">
+                            <div class="card-header">
+                                <h3>
+                                    <i data-lucide="clock"></i>
+                                    Daily Deadline Timer
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="timer-container">
+                                    <div class="circular-timer" id="daily-timer">
+                                        <svg viewBox="0 0 100 100">
+                                            <circle cx="50" cy="50" r="45" class="timer-bg"></circle>
+                                            <circle cx="50" cy="50" r="45" class="timer-progress" id="timer-circle"></circle>
+                                        </svg>
+                                        <div class="timer-text">
+                                            <span id="timer-value">24h 0m</span>
+                                            <span class="timer-label">until midnight</span>
+                                        </div>
+                                    </div>
+                                    <p id="timer-message" class="timer-message">No daily tasks pending</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Experience Points -->
+                        <div class="card xp-card">
+                            <div class="card-header">
+                                <h3>
+                                    <i data-lucide="zap"></i>
+                                    Experience Points
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="xp-display">
+                                    <div class="xp-value" id="net-points">0</div>
+                                    <div class="xp-breakdown">
+                                        Earned: +<span id="total-points">0</span> | Penalties: -<span id="penalties">0</span>
+                                    </div>
+                                </div>
+                                <div class="circular-chart" id="xp-chart">
+                                    <svg viewBox="0 0 100 100">
+                                        <circle cx="50" cy="50" r="40" class="chart-bg"></circle>
+                                        <circle cx="50" cy="50" r="40" class="chart-progress" id="xp-circle"></circle>
+                                    </svg>
+                                    <div class="chart-text">
+                                        <span id="xp-chart-value">0</span>
+                                        <span class="chart-max">/ 500</span>
+                                    </div>
+                                    <div class="chart-label">Total XP</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Second Row -->
+                    <div class="stats-row">
+                        <!-- Daily Streak -->
+                        <div class="card streak-card">
+                            <div class="card-header">
+                                <h3>
+                                    <i data-lucide="flame"></i>
+                                    Daily Streak
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="streak-display-main">
+                                    <div class="streak-icon">
+                                        <i data-lucide="flame" id="main-flame"></i>
+                                    </div>
+                                    <div class="streak-count" id="streak-count">0 / 7 days</div>
+                                    <div class="streak-progress">
+                                        <div class="streak-bar" id="streak-bar"></div>
+                                    </div>
+                                    <p class="streak-message">Keep the streak alive!</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- System Diagnostics -->
+                        <div class="card diagnostics-card">
+                            <div class="card-header">
+                                <h3>System Diagnostics</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="diagnostics-grid">
+                                    <div class="diagnostic-item cyan">
+                                        <div class="diagnostic-value" id="total-tasks">0</div>
+                                        <div class="diagnostic-label">Total Processes</div>
+                                    </div>
+                                    <div class="diagnostic-item green">
+                                        <div class="diagnostic-value" id="active-tasks">0</div>
+                                        <div class="diagnostic-label">Active Now</div>
+                                    </div>
+                                    <div class="diagnostic-item red">
+                                        <div class="diagnostic-value" id="overdue-tasks">0</div>
+                                        <div class="diagnostic-label">Critical Alerts</div>
+                                    </div>
+                                    <div class="diagnostic-item yellow">
+                                        <div class="diagnostic-value" id="penalty-points">0</div>
+                                        <div class="diagnostic-label">Penalty Points</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Third Row - System Analysis -->
+                    <div class="stats-row full-width">
+                        <div class="card analysis-card">
+                            <div class="card-header">
+                                <h3>
+                                    <i data-lucide="trending-up"></i>
+                                    System Analysis
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="analysis-charts">
+                                    <div class="circular-chart large" id="completed-chart">
+                                        <svg viewBox="0 0 100 100">
+                                            <circle cx="50" cy="50" r="40" class="chart-bg"></circle>
+                                            <circle cx="50" cy="50" r="40" class="chart-progress green" id="completed-circle"></circle>
+                                        </svg>
+                                        <div class="chart-text">
+                                            <span id="completed-value">0</span>
+                                            <span class="chart-max">/ <span id="completed-max">1</span></span>
+                                        </div>
+                                        <div class="chart-label">Tasks Complete</div>
+                                    </div>
+                                    <div class="circular-chart large" id="success-chart">
+                                        <svg viewBox="0 0 100 100">
+                                            <circle cx="50" cy="50" r="40" class="chart-bg"></circle>
+                                            <circle cx="50" cy="50" r="40" class="chart-progress cyan" id="success-circle"></circle>
+                                        </svg>
+                                        <div class="chart-text">
+                                            <span id="success-value">0</span>
+                                            <span class="chart-max">/ 100</span>
+                                        </div>
+                                        <div class="chart-label">Success Rate %</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Modal -->
+    <div id="task-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Deploy New Task</h3>
+                <button id="close-modal" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="task-name">Process Name</label>
+                    <input type="text" id="task-name" placeholder="Enter task identifier">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="start-time">Start Time</label>
+                        <input type="time" id="start-time">
+                    </div>
+                    <div class="form-group">
+                        <label for="end-time">End Time</label>
+                        <input type="time" id="end-time">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="points">Reward Points</label>
+                    <input type="number" id="points" value="10" min="1" max="100">
+                </div>
+                <div class="form-group">
+                    <label for="frequency">Frequency</label>
+                    <select id="frequency">
+                        <option value="today">Today Only</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category">
+                        <option value="study">📚 Study</option>
+                        <option value="work">💼 Work</option>
+                        <option value="gym">💪 Gym</option>
+                        <option value="skill">🎯 Skill</option>
+                        <option value="personal">👤 Personal</option>
+                        <option value="health">🏥 Health</option>
+                        <option value="other">📋 Other</option>
+                    </select>
+                </div>
+                <div class="warning">
+                    ⚠️ WARNING: Incomplete tasks will result in 50% point penalty
+                </div>
+                <div class="modal-actions">
+                    <button id="deploy-task" class="btn-success">Deploy Task</button>
+                    <button id="sync-calendar" class="btn-outline">
+                        <i data-lucide="calendar"></i>
+                        Sync Calendar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
